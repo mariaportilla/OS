@@ -1,0 +1,113 @@
+const int LedGreen = 11;
+const int LedRed = 12;
+const int LedYellow = 13;
+
+bool estadoGreen = false;
+bool estadoRed = false;
+bool estadoYellow = false;
+
+void setup() {
+  pinMode(LedGreen, OUTPUT);
+  pinMode(LedRed, OUTPUT);
+  pinMode(LedYellow, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("Ingrese un numero para controlar las luces:");
+  Serial.println("1. Encender/Apagar luz verde");
+  Serial.println("2. Encender/Apagar luz roja");
+  Serial.println("3. Encender/Apagar luz amarilla");
+  Serial.println("4. Encender/Apagar todas las luces");
+  Serial.println("5. Modo intermitente");  
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    int opcion = Serial.read() - '0';
+
+    switch (opcion) {
+      case 1:
+        case1();
+        break;
+      case 2:
+        case2();
+        break;
+      case 3:
+        case3();
+        break;
+      case 4:
+        case4();
+        break;
+      case 5:
+        modoIntermitente();
+        break;
+      default:
+        Serial.println("Opcion invalida");
+        break;
+    }
+  }
+}
+
+void case1(){
+  estadoGreen = !estadoGreen;
+  digitalWrite(LedGreen, estadoGreen);
+  Serial.print("Luz verde ");
+  Serial.println(estadoGreen ? "encendida" : "apagada");
+}
+
+void case2(){
+  estadoRed = !estadoRed;
+  digitalWrite(LedRed, estadoRed);
+  Serial.print("Luz roja ");
+  Serial.println(estadoRed ? "encendida" : "apagada");
+}
+
+void case3(){
+  estadoYellow = !estadoYellow;
+  digitalWrite(LedYellow, estadoYellow);
+  Serial.print("Luz amarilla ");
+  Serial.println(estadoYellow ? "encendida" : "apagada");
+}
+
+void case4(){
+  if (!estadoGreen && !estadoRed && !estadoYellow) {
+    estadoGreen = HIGH;
+    estadoRed = HIGH;
+    estadoYellow = HIGH;
+    digitalWrite(LedGreen, estadoGreen);
+    digitalWrite(LedRed, estadoRed);
+    digitalWrite(LedYellow, estadoYellow);
+    Serial.println("Todos los bombillos encendidos");
+  } else {
+    estadoGreen = LOW;
+    estadoRed = LOW;
+    estadoYellow = LOW;
+    digitalWrite(LedGreen, estadoGreen);
+    digitalWrite(LedRed, estadoRed);
+    digitalWrite(LedYellow, estadoYellow);
+    Serial.println("Todos los bombillos apagados");
+  }
+}
+
+void modoIntermitente() {
+  Serial.println("Modo intermitente activado");
+  while (true) {
+    digitalWrite(LedGreen, HIGH);
+    digitalWrite(LedRed, HIGH);
+    digitalWrite(LedYellow, HIGH);
+    delay(500);
+    digitalWrite(LedGreen, LOW);
+    digitalWrite(LedRed, LOW);
+    digitalWrite(LedYellow, LOW);
+    delay(500);
+    
+    if (Serial.available() > 0) {
+      int opcion = Serial.read();
+      if (opcion != '\n') {
+        break;
+      }
+    }
+  }
+  digitalWrite(LedGreen, LOW);
+  digitalWrite(LedRed, LOW);
+  digitalWrite(LedYellow, LOW);
+}

@@ -1,0 +1,41 @@
+#include <LiquidCrystal.h>
+
+int seg = 0;
+int TmpSensor = A0;
+int Led = 13;
+int Motor = 10;
+LiquidCrystal LSD(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  LSD.begin(16, 2);
+  pinMode(TmpSensor, INPUT);
+  pinMode(Led, OUTPUT);
+  pinMode(Motor, OUTPUT);
+  Serial.begin(9600);
+  LSD.print("Temperatura:");
+}
+
+void loop() {
+  int temperature = (-40 + 0.488155 * (analogRead(TmpSensor) - 20));
+  Serial.print("Temperatura: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+  LSD.setCursor(0, 1);
+  LSD.print(temperature);
+  delay(1000);
+  seg += 1;
+  
+  if (temperature <= 10) {
+    digitalWrite(Motor, LOW);
+    digitalWrite(Led, HIGH);
+    delay(1000);
+    digitalWrite(Led, LOW);
+    delay(1000);
+  } else if (temperature >= 11 && temperature <= 25) {
+    digitalWrite(Motor, LOW);
+    digitalWrite(Led, LOW);
+  } else if (temperature >= 26) {
+    digitalWrite(Led, HIGH);
+    digitalWrite(Motor, HIGH);
+  }
+}
